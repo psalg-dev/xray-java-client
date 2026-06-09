@@ -51,6 +51,18 @@ public final class ViolationsQueryBuilder {
         return this;
     }
 
+    /** Filter by artifact name/prefix (server-side). */
+    public ViolationsQueryBuilder forArtifact(String artifactName) {
+        filterBuilder.artifact(artifactName);
+        return this;
+    }
+
+    /** Filter by component name. */
+    public ViolationsQueryBuilder forComponent(String componentName) {
+        filterBuilder.component(componentName);
+        return this;
+    }
+
     /** Filter by watch names. */
     public ViolationsQueryBuilder watches(String... watchNames) {
         filterBuilder.watchNames(List.of(watchNames));

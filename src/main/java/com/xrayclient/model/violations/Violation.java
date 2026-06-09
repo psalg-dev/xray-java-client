@@ -17,7 +17,7 @@ public record Violation(
         @JsonProperty("description") String description,
         @JsonProperty("type") String type,
         @JsonProperty("severity") String severity,
-        @JsonProperty("impacted_artifacts") List<String> impactedArtifacts,
+        @JsonProperty("impacted_artifacts") List<ImpactedArtifact> impactedArtifacts,
         @JsonProperty("cves") List<Cve> cves
 ) {
     public Severity severityEnum() {
@@ -30,6 +30,7 @@ public record Violation(
             @JsonProperty("cvss_v2_score") String cvssV2Score,
             @JsonProperty("cvss_v2_vector") String cvssV2Vector,
             @JsonProperty("cvss_v3_score") String cvssV3Score,
-            @JsonProperty("cvss_v3_vector") String cvssV3Vector
+            @JsonProperty("cvss_v3_vector") String cvssV3Vector,
+            @JsonProperty("fix_versions") List<String> fixVersions
     ) {}
 }

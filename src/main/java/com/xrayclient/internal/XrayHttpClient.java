@@ -6,6 +6,8 @@ import com.xrayclient.exception.XrayApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -29,6 +31,47 @@ public final class XrayHttpClient {
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(builder.connectTimeoutSeconds))
                 .build();
+    }
+
+    public <T> T get(String path, Class<T> responseType) {
+        String body = executeGet(path);
+        try {
+            return mapper.readValue(body, responseType);
+        } catch (Exception e) {
+            throw new XrayApiException("Failed to parse response", e);
+        }
+    }
+
+    public <T> T get(String path, TypeReference<T> responseType) {
+        String body = executeGet(path);
+        try {
+            return mapper.readValue(body, responseType);
+        } catch (Exception e) {
+            throw new XrayApiException("Failed to parse response", e);
+        }
+    }
+
+    private String executeGet(String path) {
+        try {
+            log.debug("GET {}", baseUrl + path);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + path))
+                    .header("Authorization", authHeader)
+                    .header("Accept", "application/json")
+                    .GET()
+                    .timeout(Duration.ofSeconds(30))
+                    .build();
+
+            HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new XrayApiException(response.statusCode(), response.body());
+            }
+            return response.body();
+        } catch (XrayApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new XrayApiException("HTTP request failed", e);
+        }
     }
 
     public <T> T post(String path, Object requestBody, Class<T> responseType) {

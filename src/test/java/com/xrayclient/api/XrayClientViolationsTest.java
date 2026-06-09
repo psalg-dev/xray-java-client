@@ -2,6 +2,7 @@ package com.xrayclient.api;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.xrayclient.exception.XrayApiException;
+import com.xrayclient.model.violations.ImpactedArtifact;
 import com.xrayclient.model.violations.Severity;
 import com.xrayclient.model.violations.Violation;
 import com.xrayclient.model.violations.ViolationsResponse;
@@ -168,6 +169,40 @@ class XrayClientViolationsTest {
     }
 
     @Test
+    void fetchPage_deserializesRichImpactedArtifacts() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(violationWithArtifactAndCve())));
+
+        ViolationsResponse response = client.violations().fetchPage(1, 25);
+
+        Violation v = response.violations().getFirst();
+        assertThat(v.impactedArtifacts()).hasSize(1);
+        assertThat(v.impactedArtifacts().getFirst().name()).isEqualTo("foo-batch-service");
+        assertThat(v.impactedArtifacts().getFirst().pkgType()).isEqualTo("docker");
+        assertThat(v.impactedArtifacts().getFirst().sha256()).isEqualTo("abc123");
+    }
+
+    @Test
+    void fetchPage_deserializesCveWithFixVersions() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(violationWithArtifactAndCve())));
+
+        ViolationsResponse response = client.violations().fetchPage(1, 25);
+
+        Violation v = response.violations().getFirst();
+        assertThat(v.cves()).hasSize(1);
+        assertThat(v.cves().getFirst().cveId()).isEqualTo("CVE-2021-44228");
+        assertThat(v.cves().getFirst().cvssV3Score()).isEqualTo("10.0");
+        assertThat(v.cves().getFirst().fixVersions()).containsExactly("2.15.0", "2.16.0");
+    }
+
+    @Test
     void violations_activeOnlyFilter_setsByDefault() {
         wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
                 .withRequestBody(matchingJsonPath("$.filters.violation_status", equalTo("Active")))
@@ -180,6 +215,36 @@ class XrayClientViolationsTest {
 
         wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
                 .withRequestBody(matchingJsonPath("$.filters.violation_status", equalTo("Active"))));
+    }
+
+    @Test
+    void violations_forArtifact_serializedToFilterBody() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.artifact", equalTo("foo-batch-service")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().forArtifact("foo-batch-service").fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.artifact", equalTo("foo-batch-service"))));
+    }
+
+    @Test
+    void violations_forComponent_serializedToFilterBody() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.component", equalTo("log4j")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().forComponent("log4j").fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.component", equalTo("log4j"))));
     }
 
     @Test
@@ -238,6 +303,40 @@ class XrayClientViolationsTest {
     private String emptyPage() {
         return """
                 {"violations":[],"total_violations":0}
+                """;
+    }
+
+    private String violationWithArtifactAndCve() {
+        return """
+                {
+                  "violations": [
+                    {
+                      "watch_name": "foo.scan.test.watch",
+                      "policy_name": "security-policy",
+                      "rule_name": "block-critical",
+                      "type": "security",
+                      "severity": "Critical",
+                      "impacted_artifacts": [
+                        {
+                          "name": "foo-batch-service",
+                          "display_name": "foo-batch-service:1.0.0",
+                          "path": "docker-local/foo-batch-service/1.0.0",
+                          "pkg_type": "docker",
+                          "sha256": "abc123"
+                        }
+                      ],
+                      "cves": [
+                        {
+                          "cve": "CVE-2021-44228",
+                          "cvss_v3_score": "10.0",
+                          "cvss_v3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+                          "fix_versions": ["2.15.0", "2.16.0"]
+                        }
+                      ]
+                    }
+                  ],
+                  "total_violations": 1
+                }
                 """;
     }
 }
