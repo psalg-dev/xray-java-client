@@ -1,0 +1,12 @@
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\api\ViolationsQueryBuilder.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\api\XrayClient.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\exception\XrayApiException.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\internal\ViolationsApi.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\internal\ViolationsRequest.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\internal\XrayHttpClient.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\ImpactedArtifact.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\Severity.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\Violation.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\ViolationFilter.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\ViolationsResponse.java
+C:\dev\workspace\research\xray-java-client\src\main\java\com\xrayclient\model\violations\ViolationType.java

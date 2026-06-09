@@ -1,0 +1,17 @@
+com\xrayclient\internal\ViolationsRequest.class
+com\xrayclient\internal\XrayHttpClient$Builder.class
+com\xrayclient\internal\XrayHttpClient.class
+com\xrayclient\model\violations\ViolationFilter$Builder.class
+com\xrayclient\exception\XrayApiException.class
+com\xrayclient\model\violations\ImpactedArtifact.class
+com\xrayclient\model\violations\Severity.class
+com\xrayclient\model\violations\ViolationFilter.class
+com\xrayclient\internal\ViolationsApi.class
+com\xrayclient\api\XrayClient$Builder.class
+com\xrayclient\api\XrayClient.class
+com\xrayclient\model\violations\ViolationsResponse.class
+com\xrayclient\model\violations\ViolationType.class
+com\xrayclient\model\violations\Violation$Cve.class
+com\xrayclient\model\violations\Violation.class
+com\xrayclient\api\ViolationsQueryBuilder.class
+com\xrayclient\model\violations\ImpactedArtifact$InfectedFile.class
