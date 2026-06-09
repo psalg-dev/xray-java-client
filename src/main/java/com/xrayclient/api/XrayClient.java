@@ -2,6 +2,8 @@ package com.xrayclient.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.xrayclient.internal.ArtifactsApi;
+import com.xrayclient.internal.BuildsApi;
 import com.xrayclient.internal.ViolationsApi;
 import com.xrayclient.internal.WatchesApi;
 import com.xrayclient.internal.XrayHttpClient;
@@ -38,6 +40,16 @@ public final class XrayClient {
     /** Returns a builder for querying watches. */
     public WatchesQueryBuilder watches() {
         return new WatchesQueryBuilder(new WatchesApi(httpClient));
+    }
+
+    /** Returns a builder for querying builds and build summaries. */
+    public BuildsQueryBuilder builds() {
+        return new BuildsQueryBuilder(new BuildsApi(httpClient));
+    }
+
+    /** Returns a builder for querying artifact summaries. */
+    public ArtifactsQueryBuilder artifacts() {
+        return new ArtifactsQueryBuilder(new ArtifactsApi(httpClient));
     }
 
     public static Builder builder() {
