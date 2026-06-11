@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Build and test
+        run: mvn --batch-mode --update-snapshots verify -DexcludedGroups=wiremock
+
+      - name: Run WireMock-based tests (informational)
+        # These tests bind to a loopback port and are known to fail in some
+        # CI sandboxes due to socket restrictions. They run for visibility
+        # but do not fail the build.
+        run: mvn --batch-mode test -Dgroups=wiremock
+        continue-on-error: true

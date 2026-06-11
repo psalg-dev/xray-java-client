@@ -8,6 +8,7 @@ import com.xrayclient.model.violations.Violation;
 import com.xrayclient.model.violations.ViolationType;
 import com.xrayclient.model.violations.ViolationsResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -19,6 +20,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Tag("wiremock")
 class XrayClientViolationsTest {
 
     @RegisterExtension

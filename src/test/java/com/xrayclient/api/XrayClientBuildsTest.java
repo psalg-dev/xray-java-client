@@ -5,6 +5,7 @@ import com.xrayclient.exception.XrayApiException;
 import com.xrayclient.model.builds.BuildSummary;
 import com.xrayclient.model.builds.IndexedBuild;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -15,6 +16,7 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Tag("wiremock")
 class XrayClientBuildsTest {
 
     @RegisterExtension
