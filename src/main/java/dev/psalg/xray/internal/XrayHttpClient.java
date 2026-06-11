@@ -34,6 +34,15 @@ public final class XrayHttpClient {
                 .build();
     }
 
+    /** Test seam: inject a custom {@link HttpClient} (e.g. a fake) bypassing the builder. */
+    XrayHttpClient(HttpClient http, String baseUrl, String authHeader, ObjectMapper mapper, Duration readTimeout) {
+        this.http = http;
+        this.baseUrl = baseUrl.replaceAll("/+$", "");
+        this.authHeader = authHeader;
+        this.mapper = mapper;
+        this.readTimeout = readTimeout;
+    }
+
     public <T> T get(String path, Class<T> responseType) {
         String body = executeGet(path);
         try {

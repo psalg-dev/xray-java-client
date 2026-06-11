@@ -30,7 +30,7 @@ that has the `read:packages` scope to your `~/.m2/settings.xml`:
 
 ### Maven
 
-Add the repository and dependency to your `pom.xml`:
+Use version `1.0.1` or newer. Add the repository and dependency to your `pom.xml`:
 
 ```xml
 <repositories>
