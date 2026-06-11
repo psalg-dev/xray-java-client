@@ -1,5 +1,8 @@
 package com.xrayclient.exception;
 
+import lombok.Getter;
+
+@Getter
 public class XrayApiException extends RuntimeException {
     private final int statusCode;
     private final String responseBody;
@@ -15,7 +18,4 @@ public class XrayApiException extends RuntimeException {
         this.statusCode = -1;
         this.responseBody = null;
     }
-
-    public int getStatusCode() { return statusCode; }
-    public String getResponseBody() { return responseBody; }
 }

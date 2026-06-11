@@ -3,8 +3,7 @@ package com.xrayclient.internal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.xrayclient.exception.XrayApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -15,9 +14,8 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
 
+@Slf4j
 public final class XrayHttpClient {
-
-    private static final Logger log = LoggerFactory.getLogger(XrayHttpClient.class);
 
     private final HttpClient http;
     private final String baseUrl;
