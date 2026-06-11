@@ -1,0 +1,29 @@
+# Maven
+target/
+
+# Gradle
+.gradle/
+gradle-*/
+*.zip
+
+# Java
+*.class
+*.jar
+hs_err_pid*
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# Tooling
+.serena/
+
+# OS
+.DS_Store
+Thumbs.db
