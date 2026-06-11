@@ -114,11 +114,34 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.3.1</version>
                 <configuration>
-                    <argLine>--enable-preview</argLine>
+                    <argLine>--enable-preview ${jacoco.agent.argLine}</argLine>
                     <excludes>
                         <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.13</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>jacoco.agent.argLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
