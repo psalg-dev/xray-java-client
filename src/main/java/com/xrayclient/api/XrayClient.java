@@ -1,7 +1,5 @@
 package com.xrayclient.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.xrayclient.internal.ArtifactsApi;
 import com.xrayclient.internal.BuildsApi;
 import com.xrayclient.internal.ViolationsApi;

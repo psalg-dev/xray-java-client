@@ -1,5 +1,6 @@
 package com.xrayclient.internal;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.xrayclient.model.builds.BuildSummary;
@@ -33,6 +34,7 @@ public final class BuildsApi {
             @JsonProperty("number") String number
     ) {}
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     record IndexedBuildsResponse(
             @JsonProperty("rows") List<IndexedBuild> rows,
             @JsonProperty("count") int count

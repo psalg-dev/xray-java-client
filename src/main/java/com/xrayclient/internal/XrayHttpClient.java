@@ -21,11 +21,13 @@ public final class XrayHttpClient {
     private final String baseUrl;
     private final String authHeader;
     private final ObjectMapper mapper;
+    private final Duration readTimeout;
 
     private XrayHttpClient(Builder builder) {
         this.baseUrl = builder.baseUrl.replaceAll("/+$", "");
         this.authHeader = builder.authHeader;
         this.mapper = builder.mapper;
+        this.readTimeout = Duration.ofSeconds(builder.readTimeoutSeconds);
         this.http = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(builder.connectTimeoutSeconds))
                 .build();
@@ -57,7 +59,7 @@ public final class XrayHttpClient {
                     .header("Authorization", authHeader)
                     .header("Accept", "application/json")
                     .GET()
-                    .timeout(Duration.ofSeconds(30))
+                    .timeout(readTimeout)
                     .build();
 
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
@@ -83,7 +85,7 @@ public final class XrayHttpClient {
                     .header("Content-Type", "application/json")
                     .header("Accept", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(bodyJson))
-                    .timeout(Duration.ofSeconds(30))
+                    .timeout(readTimeout)
                     .build();
 
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());

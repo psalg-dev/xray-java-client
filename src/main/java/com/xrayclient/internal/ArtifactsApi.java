@@ -2,7 +2,6 @@ package com.xrayclient.internal;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.xrayclient.model.artifacts.ArtifactSummary;
 import com.xrayclient.model.builds.BuildIssue;
 
@@ -11,7 +10,6 @@ import java.util.List;
 public final class ArtifactsApi {
 
     private static final String SUMMARY_PATH = "/xray/api/v1/summary/artifact";
-    private static final TypeReference<ArtifactSummaryResponse> SUMMARY_TYPE = new TypeReference<>() {};
 
     private final XrayHttpClient http;
 
