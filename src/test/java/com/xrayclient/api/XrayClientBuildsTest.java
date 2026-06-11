@@ -1,6 +1,7 @@
 package com.xrayclient.api;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.xrayclient.exception.XrayApiException;
 import com.xrayclient.model.builds.BuildSummary;
 import com.xrayclient.model.builds.IndexedBuild;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XrayClientBuildsTest {
 
@@ -28,6 +30,16 @@ class XrayClientBuildsTest {
                 .baseUrl("http://localhost:" + wm.getPort())
                 .basicAuth("admin", "password")
                 .build();
+    }
+
+    @Test
+    void summary_on404_throwsXrayApiException() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/summary/build"))
+                .willReturn(aResponse().withStatus(404).withBody("Not Found")));
+
+        assertThatThrownBy(() -> client.builds().summary("missing-build", "1"))
+                .isInstanceOf(XrayApiException.class)
+                .satisfies(ex -> assertThat(((XrayApiException) ex).getStatusCode()).isEqualTo(404));
     }
 
     @Test
@@ -148,6 +160,36 @@ class XrayClientBuildsTest {
         assertThat(builds).hasSize(2);
         assertThat(builds.get(0).buildName()).isEqualTo("foo-batch-service");
         assertThat(builds.get(1).buildName()).isEqualTo("foo-api-service");
+    }
+
+    @Test
+    void list_emptyRows_returnsEmptyList() {
+        wm.stubFor(get(urlPathEqualTo("/xray/api/v1/builds"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                {"rows": [], "count": 0}
+                                """)));
+
+        List<IndexedBuild> builds = client.builds().list();
+
+        assertThat(builds).isEmpty();
+    }
+
+    @Test
+    void list_missingRowsField_returnsEmptyList() {
+        wm.stubFor(get(urlPathEqualTo("/xray/api/v1/builds"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                {"count": 0}
+                                """)));
+
+        List<IndexedBuild> builds = client.builds().list();
+
+        assertThat(builds).isEmpty();
     }
 
     // ---- helpers ----

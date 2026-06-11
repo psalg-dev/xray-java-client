@@ -1,6 +1,7 @@
 package com.xrayclient.api;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.xrayclient.exception.XrayApiException;
 import com.xrayclient.model.artifacts.ArtifactSummary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XrayClientArtifactsTest {
 
@@ -92,6 +94,32 @@ class XrayClientArtifactsTest {
         assertThat(issues.getFirst().summary()).isEqualTo("Remote code execution via Log4Shell");
         assertThat(issues.getFirst().cves().getFirst().cveId()).isEqualTo("CVE-2021-44228");
         assertThat(issues.getFirst().components().getFirst().fixedVersions()).containsExactly("2.15.0");
+    }
+
+    @Test
+    void summaryByPath_emptyArtifactsResponse_returnsEmptyList() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/summary/artifact"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("""
+                                {"artifacts": []}
+                                """)));
+
+        List<ArtifactSummary> summaries = client.artifacts()
+                .summaryByPath("docker-local/missing/1.0.0/manifest.json");
+
+        assertThat(summaries).isEmpty();
+    }
+
+    @Test
+    void summaryByPath_on500_throwsXrayApiException() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/summary/artifact"))
+                .willReturn(aResponse().withStatus(500).withBody("Internal Server Error")));
+
+        assertThatThrownBy(() -> client.artifacts().summaryByPath("docker-local/foo/1.0.0/manifest.json"))
+                .isInstanceOf(XrayApiException.class)
+                .satisfies(ex -> assertThat(((XrayApiException) ex).getStatusCode()).isEqualTo(500));
     }
 
     @Test

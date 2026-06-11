@@ -1,6 +1,7 @@
 package com.xrayclient.api;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.xrayclient.exception.XrayApiException;
 import com.xrayclient.model.watches.Watch;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class XrayClientWatchesTest {
 
@@ -69,6 +71,29 @@ class XrayClientWatchesTest {
 
         assertThat(watches.get(0).active()).isTrue();
         assertThat(watches.get(1).active()).isFalse();
+    }
+
+    @Test
+    void listWatches_emptyResponse_returnsEmptyList() {
+        wm.stubFor(get(urlPathEqualTo("/xray/api/v2/watches"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("[]")));
+
+        List<Watch> watches = client.watches().list();
+
+        assertThat(watches).isEmpty();
+    }
+
+    @Test
+    void listWatches_on500_throwsXrayApiException() {
+        wm.stubFor(get(urlPathEqualTo("/xray/api/v2/watches"))
+                .willReturn(aResponse().withStatus(500).withBody("Internal Server Error")));
+
+        assertThatThrownBy(() -> client.watches().list())
+                .isInstanceOf(XrayApiException.class)
+                .satisfies(ex -> assertThat(((XrayApiException) ex).getStatusCode()).isEqualTo(500));
     }
 
     @Test

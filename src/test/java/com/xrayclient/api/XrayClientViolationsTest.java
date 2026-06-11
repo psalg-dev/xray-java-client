@@ -5,6 +5,7 @@ import com.xrayclient.exception.XrayApiException;
 import com.xrayclient.model.violations.ImpactedArtifact;
 import com.xrayclient.model.violations.Severity;
 import com.xrayclient.model.violations.Violation;
+import com.xrayclient.model.violations.ViolationType;
 import com.xrayclient.model.violations.ViolationsResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -245,6 +246,87 @@ class XrayClientViolationsTest {
 
         wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
                 .withRequestBody(matchingJsonPath("$.filters.component", equalTo("log4j"))));
+    }
+
+    @Test
+    void fetchAll_zeroResults_returnsEmptyList() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        List<Violation> all = client.violations().fetchAll();
+
+        assertThat(all).isEmpty();
+        wm.verify(1, postRequestedFor(urlPathEqualTo("/xray/api/v1/violations")));
+    }
+
+    @Test
+    void fetchAll_zeroOrNegativePageSize_throwsBeforeAnyRequest() {
+        assertThatThrownBy(() -> client.violations().fetchAll(0))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        wm.verify(0, postRequestedFor(urlPathEqualTo("/xray/api/v1/violations")));
+    }
+
+    @Test
+    void violations_ofTypeEnum_serializedToFilterBody() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.type", equalTo("security")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().ofType(ViolationType.SECURITY).fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.type", equalTo("security"))));
+    }
+
+    @Test
+    void violations_policies_serializedToFilterBody() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.policy_names[0]", equalTo("security-policy")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().policies("security-policy").fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.policy_names[0]", equalTo("security-policy"))));
+    }
+
+    @Test
+    void violations_watches_serializedToFilterBody() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.watch_names[0]", equalTo("security-watch")))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().watches("security-watch").fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withRequestBody(matchingJsonPath("$.filters.watch_names[0]", equalTo("security-watch"))));
+    }
+
+    @Test
+    void fetchPage_withProjectKeyContainingSpecialCharacters_isUrlEncoded() {
+        wm.stubFor(post(urlPathEqualTo("/xray/api/v1/violations"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(emptyPage())));
+
+        client.violations().forProject("team & ops").fetchPage(1, 25);
+
+        wm.verify(postRequestedFor(urlPathEqualTo("/xray/api/v1/violations"))
+                .withQueryParam("projectKey", equalTo("team & ops")));
     }
 
     @Test
