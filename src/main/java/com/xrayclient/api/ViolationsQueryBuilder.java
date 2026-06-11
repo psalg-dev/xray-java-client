@@ -4,6 +4,7 @@ import com.xrayclient.internal.ViolationsApi;
 import com.xrayclient.model.violations.Severity;
 import com.xrayclient.model.violations.ViolationFilter;
 import com.xrayclient.model.violations.Violation;
+import com.xrayclient.model.violations.ViolationType;
 import com.xrayclient.model.violations.ViolationsResponse;
 
 import java.util.ArrayList;
@@ -51,6 +52,11 @@ public final class ViolationsQueryBuilder {
         return this;
     }
 
+    /** Filter by violation type. */
+    public ViolationsQueryBuilder ofType(ViolationType type) {
+        return ofType(type.getValue());
+    }
+
     /** Filter by artifact name/prefix (server-side). */
     public ViolationsQueryBuilder forArtifact(String artifactName) {
         filterBuilder.artifact(artifactName);
@@ -87,6 +93,9 @@ public final class ViolationsQueryBuilder {
 
     /** Fetch all violations with a custom page size. */
     public List<Violation> fetchAll(int pageSize) {
+        if (pageSize <= 0) {
+            throw new IllegalArgumentException("pageSize must be positive: " + pageSize);
+        }
         List<Violation> all = new ArrayList<>();
         int page = 1;
         while (true) {

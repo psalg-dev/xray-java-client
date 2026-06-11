@@ -2,6 +2,7 @@ package com.xrayclient.model.violations;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/** Xray violation severity levels, as used in policy filters and reported on violations. */
 public enum Severity {
     CRITICAL("Critical"),
     HIGH("High"),

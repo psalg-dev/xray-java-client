@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.xrayclient.model.watches.Watch;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public final class WatchesApi {
 
     private static final String PATH = "/xray/api/v2/watches";
@@ -14,13 +16,13 @@ public final class WatchesApi {
 
     private final XrayHttpClient http;
 
-    public WatchesApi(XrayHttpClient http) {
-        this.http = http;
-    }
-
     public List<Watch> listWatches() {
         List<WatchResponse> raw = http.get(PATH, WATCH_LIST_TYPE);
+        if (raw == null) {
+            return List.of();
+        }
         return raw.stream()
+                .filter(r -> r.generalData() != null)
                 .map(r -> new Watch(r.generalData().name(), r.generalData().description(), r.generalData().active()))
                 .toList();
     }

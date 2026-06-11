@@ -7,6 +7,7 @@ import com.xrayclient.model.common.Cve;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+/** A single policy violation returned by {@code POST /xray/api/v1/violations}. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Violation(
         @JsonProperty("violation_details_url") String violationDetailsUrl,

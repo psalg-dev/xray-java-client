@@ -2,6 +2,11 @@ package com.xrayclient.exception;
 
 import lombok.Getter;
 
+/**
+ * Thrown when an Xray API call fails: either a non-2xx HTTP response
+ * ({@code statusCode}/{@code responseBody} populated) or a transport-level
+ * failure ({@code statusCode == -1}, cause populated).
+ */
 @Getter
 public class XrayApiException extends RuntimeException {
     private final int statusCode;

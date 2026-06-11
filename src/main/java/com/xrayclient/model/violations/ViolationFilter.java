@@ -6,6 +6,7 @@ import lombok.Builder;
 
 import java.util.List;
 
+/** Server-side filter criteria for the {@code POST /xray/api/v1/violations} request body. */
 @Builder(builderClassName = "Builder")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ViolationFilter(

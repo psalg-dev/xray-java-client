@@ -14,6 +14,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
 
+/** Thin wrapper around {@link HttpClient} for authenticated JSON requests to Artifactory/Xray. */
 @Slf4j
 public final class XrayHttpClient {
 
@@ -69,6 +70,9 @@ public final class XrayHttpClient {
             return response.body();
         } catch (XrayApiException e) {
             throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new XrayApiException("HTTP request interrupted", e);
         } catch (Exception e) {
             throw new XrayApiException("HTTP request failed", e);
         }
@@ -97,6 +101,9 @@ public final class XrayHttpClient {
             return mapper.readValue(responseBody, responseType);
         } catch (XrayApiException e) {
             throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new XrayApiException("HTTP request interrupted", e);
         } catch (Exception e) {
             throw new XrayApiException("HTTP request failed", e);
         }

@@ -2,6 +2,7 @@ package com.xrayclient.model.violations;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+/** Categories of policy violations reported by Xray. */
 public enum ViolationType {
     SECURITY("security"),
     LICENSE("license"),

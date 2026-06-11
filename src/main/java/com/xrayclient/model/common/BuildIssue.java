@@ -1,11 +1,11 @@
-package com.xrayclient.model.builds;
+package com.xrayclient.model.common;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.xrayclient.model.common.Cve;
 
 import java.util.List;
 
+/** A security, license, or operational risk issue reported for a build or artifact. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record BuildIssue(
         @JsonProperty("issue_id") String issueId,

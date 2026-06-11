@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collections;
 import java.util.List;
 
+/** A page of violation results, together with the total count across all pages. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ViolationsResponse(
         @JsonProperty("violations") List<Violation> violations,

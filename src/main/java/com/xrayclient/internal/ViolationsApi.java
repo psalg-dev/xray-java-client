@@ -2,16 +2,17 @@ package com.xrayclient.internal;
 
 import com.xrayclient.model.violations.ViolationFilter;
 import com.xrayclient.model.violations.ViolationsResponse;
+import lombok.RequiredArgsConstructor;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
+@RequiredArgsConstructor
 public final class ViolationsApi {
 
     private static final String PATH = "/xray/api/v1/violations";
 
     private final XrayHttpClient http;
-
-    public ViolationsApi(XrayHttpClient http) {
-        this.http = http;
-    }
 
     public ViolationsResponse getViolations(
             ViolationFilter filter,
@@ -31,7 +32,7 @@ public final class ViolationsApi {
         sb.append("&direction=asc");
         sb.append("&order_by=updated");
         if (projectKey != null && !projectKey.isBlank()) {
-            sb.append("&projectKey=").append(projectKey);
+            sb.append("&projectKey=").append(URLEncoder.encode(projectKey, StandardCharsets.UTF_8));
         }
         return sb.toString();
     }
