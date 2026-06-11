@@ -42,9 +42,9 @@ Add the repository and dependency to your `pom.xml`:
 </repositories>
 
 <dependency>
-    <groupId>com.xrayclient</groupId>
+    <groupId>dev.psalg</groupId>
     <artifactId>xray-java-client</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -62,7 +62,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.xrayclient:xray-java-client:1.0.0")
+    implementation("dev.psalg:xray-java-client:1.0.1")
 }
 ```
 
